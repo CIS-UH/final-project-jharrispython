@@ -131,3 +131,95 @@ def delete_investor():
     except mysql.connector.Error as e:
         return jsonify({'error': f'Error: {str(e)}'})
     
+def add_stock():
+
+    data = request.json
+
+    stock_id = data.get('id')
+    stock_name = data.get('stockname', 'None')
+    stock_abb = data.get('abbreviation', 'None')
+    stock_price = data.get('currentprice', 'None')
+
+    if not stock_id:
+        return jsonify({'error': 'id is required.'}), 400
+
+    try:
+        with create_conn() as conn:
+
+            with conn.cursor(dictionary=True) as cursor:
+
+                query = """
+                    INSERT INTO stock (id, stockname, abbreviation, currentprice)
+                    VALUES (%s, %s, %s, %s)
+                """
+
+                cursor.execute(query, (stock_id, stock_name, stock_abb, stock_price))
+                conn.commit()
+
+            return jsonify({'message': 'Stock created successfully.', 'id': stock_id})
+    
+    except mysql.connector.Error as e:
+        return jsonify({'error': f'Error: {str(e)}'})
+
+def update_stock():
+
+    data = request.json
+
+    stock_id = data.get('id')
+    stock_name = data.get('stockname', 'None')
+    stock_abb = data.get('abbreviation', 'None')
+    stock_price = data.get('currentprice', 'None')
+
+
+    if not stock_id:
+        return jsonify({'error': 'id is required.'}), 400
+
+    try:
+        with create_conn() as conn:
+
+            with conn.cursor(dictionary=True) as cursor:
+
+                query = """
+                    UPDATE stock SET stockname = %s, abbreviation = %s, currentprice = %s
+                    WHERE id = %s 
+                """
+
+                cursor.execute(query, (stock_name, stock_abb, stock_price, stock_id))
+                conn.commit()
+
+                if cursor.rowcount > 0:
+                    return jsonify({'message': 'Stock updated successfully.'})
+                
+                else:
+                    return jsonify({'message': 'No stock found.'})
+
+    except mysql.connector.Error as e:
+        return jsonify({'error': f'Error: {str(e)}'})
+
+def delete_stock():
+     
+    data = request.json
+
+    stock_id = data.get('id')
+
+    if not stock_id:
+        return jsonify({'error': 'id is required.'}), 400
+
+    try:
+        with create_conn() as conn:
+
+            with conn.cursor(dictionary=True) as cursor:
+
+                query = "DELETE FROM stock WHERE id = %s"
+
+                cursor.execute(query, (stock_id, ))
+                conn.commit()      
+
+            if cursor.rowcount == 0:
+
+                return jsonify({'message': 'No stock found'})
+
+            return jsonify({'message': 'Stock removed successfully'})
+
+    except mysql.connector.Error as e:
+        return jsonify({'error': f'Error: {str(e)}'})

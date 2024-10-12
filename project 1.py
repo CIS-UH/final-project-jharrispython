@@ -23,7 +23,17 @@ def update_inestor_route():
 def delete_investor_route():
     return projectops.delete_investor()
 
+@app.route('/stock', methods = ['POST'])
+def add_stock_route():
+    return projectops.add_stock()
 
+@app.route('/stock', methods = ['PUT'])
+def update_stock_route():
+    return projectops.update_stock()
+
+@app.route('/stock', methods = ['DELETE'])
+def delete_stock_route():
+    return projectops.delete_stock()
 
 if __name__ == '__main__':
     app.run(debug=True)
