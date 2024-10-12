@@ -333,17 +333,17 @@ def investor_portfolio(investor_id):
 
             with conn.cursor(dictionary=True) as cursor:
 
-                stock_sql = """
+                stock_query = """
                             SELECT s.id AS stock_id, s.stockname AS stock_name, s.abbreviation, s.currentprice, 
                             st.quantity, st.date
                             FROM stocktransaction st
                             JOIN stock s ON st.stockid = s.id
                             WHERE st.investorid = %s
                             """
-                cursor.execute(stock_sql, (investor_id,))
+                cursor.execute(stock_query, (investor_id,))
                 stocks = cursor.fetchall()
 
-                bond_sql = """
+                bond_query = """
                             SELECT b.id AS bond_id, b.bondname AS bond_name, 
                             b.abbreviation, b.currentprice,
                             bt.quantity, bt.date
@@ -351,7 +351,7 @@ def investor_portfolio(investor_id):
                             JOIN bond b ON bt.bondid = b.id
                             WHERE bt.investorid = %s
                             """
-                cursor.execute(bond_sql, (investor_id,))
+                cursor.execute(bond_query, (investor_id,))
                 bonds = cursor.fetchall()
 
                 if not stocks and not bonds:
@@ -413,3 +413,38 @@ def transaction():
     except mysql.connector.Error as e:
         return jsonify({'error': f'Error: {str(e)}'})
 
+def cancel_transaction():
+
+    data = request.json
+
+    transaction_type = data.get('transaction_type')
+    transaction_id = data.get('transaction_id')
+
+    if not all([transaction_type, transaction_id]):
+        return jsonify({'error': 'Both type and id are required.'}), 400
+    
+    try:
+        with create_conn() as conn:
+
+            with conn.cursor(dictionary=True) as cursor:
+
+                if transaction_type == 'stock':
+
+                    query = "DELETE FROM stocktransaction WHERE id = %s"
+                elif transaction_type == 'bond':
+
+                    query = "DELETE FROM bondtransaction WHERE id = %s"
+
+                else:
+                    return jsonify({'error': 'transaction must be either "stock" or "bond".'}), 400
+
+                cursor.execute(query, (transaction_id,))
+                conn.commit()
+
+                if cursor.rowcount == 0:
+                    return jsonify({'message': 'No transaction found.'}), 404
+
+                return jsonify({'message': f'{transaction_type} transaction canceled successfully.'})
+
+    except mysql.connector.Error as e:
+        return jsonify({'error': f'Error: {str(e)}'})

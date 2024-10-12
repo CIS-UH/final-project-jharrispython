@@ -64,6 +64,10 @@ def investor_portfolio_route(investor_id):
 def make_transaction_route():
     return projectops.transaction()
 
+@app.route('/transaction/cancel', methods=['DELETE'])
+def cancel_transaction_route():
+    return projectops.cancel_transaction()
+
 
 if __name__ == '__main__':
     app.run(debug=True)
