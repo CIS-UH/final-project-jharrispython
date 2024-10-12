@@ -22,7 +22,6 @@ def investor_list():
                 return jsonify(investor)
 
 def investor_search(investor_id):
-
     with create_conn() as conn:
 
             with conn.cursor(dictionary = True) as cursor:
@@ -36,6 +35,7 @@ def investor_search(investor_id):
 
 
                 return jsonify(investor)
+    
 
 def add_investor():
     data = request.json
