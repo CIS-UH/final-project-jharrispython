@@ -23,6 +23,9 @@ def update_inestor_route():
 def delete_investor_route():
     return projectops.delete_investor()
 
+
+
+
 @app.route('/stock', methods = ['POST'])
 def add_stock_route():
     return projectops.add_stock()
@@ -34,6 +37,24 @@ def update_stock_route():
 @app.route('/stock', methods = ['DELETE'])
 def delete_stock_route():
     return projectops.delete_stock()
+
+
+
+
+@app.route('/bond', methods = ['POST'])
+def add_bond_route():
+    return projectops.add_bond()
+
+@app.route('/bond', methods = ['PUT'])
+def update_bond_route():
+    return projectops.update_bond()
+
+@app.route('/bond', methods = ['DELETE'])
+def delete_bond_route():
+    return projectops.delete_bond()
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)

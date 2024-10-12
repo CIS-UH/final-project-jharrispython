@@ -131,6 +131,9 @@ def delete_investor():
     except mysql.connector.Error as e:
         return jsonify({'error': f'Error: {str(e)}'})
     
+
+    
+    
 def add_stock():
 
     data = request.json
@@ -223,3 +226,100 @@ def delete_stock():
 
     except mysql.connector.Error as e:
         return jsonify({'error': f'Error: {str(e)}'})
+    
+
+
+    
+def add_bond():
+
+    data = request.json
+
+    bond_id = data.get('id')
+    bond_name = data.get('bondname', 'None')
+    bond_abb = data.get('abbreviation', 'None')
+    bond_price = data.get('currentprice', 'None')
+
+    if not bond_id:
+        return jsonify({'error': 'id is required.'}), 400
+
+    try:
+        with create_conn() as conn:
+
+            with conn.cursor(dictionary=True) as cursor:
+
+                query = """
+                    INSERT INTO bond (id, bondname, abbreviation, currentprice)
+                    VALUES (%s, %s, %s, %s)
+                """
+
+                cursor.execute(query, (bond_id, bond_name, bond_abb, bond_price))
+                conn.commit()
+
+            return jsonify({'message': 'Bond created successfully.', 'id': bond_id})
+    
+    except mysql.connector.Error as e:
+        return jsonify({'error': f'Error: {str(e)}'})
+
+def update_bond():
+
+    data = request.json
+
+    bond_id = data.get('id')
+    bond_name = data.get('bondname', 'None')
+    bond_abb = data.get('abbreviation', 'None')
+    bond_price = data.get('currentprice', 'None')
+
+
+    if not bond_id:
+        return jsonify({'error': 'id is required.'}), 400
+
+    try:
+        with create_conn() as conn:
+
+            with conn.cursor(dictionary=True) as cursor:
+
+                query = """
+                    UPDATE bond SET bondname = %s, abbreviation = %s, currentprice = %s
+                    WHERE id = %s 
+                """
+
+                cursor.execute(query, (bond_name, bond_abb, bond_price, bond_id))
+                conn.commit()
+
+                if cursor.rowcount > 0:
+                    return jsonify({'message': 'Bond updated successfully.'})
+                
+                else:
+                    return jsonify({'message': 'No bond found.'})
+
+    except mysql.connector.Error as e:
+        return jsonify({'error': f'Error: {str(e)}'})
+
+def delete_bond():
+     
+    data = request.json
+
+    bond_id = data.get('id')
+
+    if not bond_id:
+        return jsonify({'error': 'id is required.'}), 400
+
+    try:
+        with create_conn() as conn:
+
+            with conn.cursor(dictionary=True) as cursor:
+
+                query = "DELETE FROM bond WHERE id = %s"
+
+                cursor.execute(query, (bond_id, ))
+                conn.commit()      
+
+            if cursor.rowcount == 0:
+
+                return jsonify({'message': 'No bond found'})
+
+            return jsonify({'message': 'Bond removed successfully'})
+
+    except mysql.connector.Error as e:
+        return jsonify({'error': f'Error: {str(e)}'})
+    
