@@ -60,6 +60,9 @@ def delete_bond_route():
 def investor_portfolio_route(investor_id):
     return projectops.investor_portfolio(investor_id)
 
+@app.route('/investor/transaction', methods=['POST'])
+def make_transaction_route():
+    return projectops.transaction()
 
 
 if __name__ == '__main__':

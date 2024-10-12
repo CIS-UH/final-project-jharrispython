@@ -363,3 +363,53 @@ def investor_portfolio(investor_id):
                 }
 
                 return jsonify(portfolio)
+
+def transaction():
+
+    data = request.json
+
+    investor_id = data.get('investor_id')
+    asset_type = data.get('asset_type')
+    asset_id = data.get('asset_id')
+    quantity = data.get('quantity')
+    transaction_type = data.get('transaction_type')
+
+    if not all([investor_id, asset_type, asset_id, quantity, transaction_type]):
+        return jsonify({'error': 'All fields are required.'}), 400
+    
+    if transaction_type == 'sell':
+        quantity = -abs(quantity)
+    elif transaction_type == 'buy':
+        quantity = abs(quantity)
+    else:
+        return jsonify({'error': 'transaction type must be either "buy" or "sell".'}), 400
+    
+    try:
+        with create_conn() as conn:
+
+            with conn.cursor(dictionary=True) as cursor:
+                if asset_type == 'stock':
+                    
+                    query = """
+                            INSERT INTO stocktransaction (investorid, stockid, quantity, date)
+                            VALUES (%s, %s, %s, NOW())
+                        """
+                    cursor.execute(query, (investor_id, asset_id, quantity))
+
+                elif asset_type == 'bond':
+                    
+                    query = """
+                            INSERT INTO bondtransaction (investorid, bondid, quantity, date)
+                            VALUES (%s, %s, %s, NOW())
+                            """
+                    cursor.execute(query, (investor_id, asset_id, quantity))
+
+                else:
+                    return jsonify({'error': 'asset must be either "stock" or "bond".'}), 400
+
+                conn.commit()
+                return jsonify({'message': f'Transaction successful for {transaction_type} of {asset_type}.'})
+
+    except mysql.connector.Error as e:
+        return jsonify({'error': f'Error: {str(e)}'})
+
