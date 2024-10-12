@@ -56,5 +56,11 @@ def delete_bond_route():
 
 
 
+@app.route('/investor/<int:investor_id>/portfolio', methods=['GET'])
+def investor_portfolio_route(investor_id):
+    return projectops.investor_portfolio(investor_id)
+
+
+
 if __name__ == '__main__':
     app.run(debug=True)

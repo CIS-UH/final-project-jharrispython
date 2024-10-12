@@ -132,8 +132,9 @@ def delete_investor():
         return jsonify({'error': f'Error: {str(e)}'})
     
 
-    
-    
+
+
+
 def add_stock():
 
     data = request.json
@@ -229,7 +230,8 @@ def delete_stock():
     
 
 
-    
+
+
 def add_bond():
 
     data = request.json
@@ -323,3 +325,41 @@ def delete_bond():
     except mysql.connector.Error as e:
         return jsonify({'error': f'Error: {str(e)}'})
     
+
+
+def investor_portfolio(investor_id):
+
+    with create_conn() as conn:
+
+            with conn.cursor(dictionary=True) as cursor:
+
+                stock_sql = """
+                            SELECT s.id AS stock_id, s.stockname AS stock_name, s.abbreviation, s.currentprice, 
+                            st.quantity, st.date
+                            FROM stocktransaction st
+                            JOIN stock s ON st.stockid = s.id
+                            WHERE st.investorid = %s
+                            """
+                cursor.execute(stock_sql, (investor_id,))
+                stocks = cursor.fetchall()
+
+                bond_sql = """
+                            SELECT b.id AS bond_id, b.bondname AS bond_name, 
+                            b.abbreviation, b.currentprice,
+                            bt.quantity, bt.date
+                            FROM bondtransaction bt
+                            JOIN bond b ON bt.bondid = b.id
+                            WHERE bt.investorid = %s
+                            """
+                cursor.execute(bond_sql, (investor_id,))
+                bonds = cursor.fetchall()
+
+                if not stocks and not bonds:
+                    return jsonify({'message': 'No portfolio found for this investor.'}), 404
+                
+                portfolio = {
+                'stocks': stocks,
+                'bonds': bonds
+                }
+
+                return jsonify(portfolio)
