@@ -23,5 +23,7 @@ def update_inestor_route():
 def delete_investor_route():
     return projectops.delete_investor()
 
+
+
 if __name__ == '__main__':
     app.run(debug=True)

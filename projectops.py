@@ -88,7 +88,7 @@ def update_investor():
                     WHERE id = %s 
                 """
 
-                cursor.execute(query, (invest_id, first_name, last_name))
+                cursor.execute(query, (first_name, last_name, invest_id))
                 conn.commit()
 
                 if cursor.rowcount > 0:
