@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request, jsonify
 import projectops
 
 app = Flask(__name__)
@@ -24,8 +24,12 @@ def delete_investor_route():
     return projectops.delete_investor()
 
 @app.route('/investor', methods=['PUT'])
-def update_investor_route():
-    return projectops.update_investor()
+def update_investor():
+    data = request.json  
+    print('Received data:', data)
+    
+    return jsonify({'message': 'Investor updated successfully'})
+
 
 
 
