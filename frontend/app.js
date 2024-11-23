@@ -4,6 +4,7 @@ const axios = require('axios');
 const path = require('path');
 
 
+console.log('Views directory:', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
