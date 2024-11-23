@@ -23,6 +23,10 @@ def update_inestor_route():
 def delete_investor_route():
     return projectops.delete_investor()
 
+@app.route('/investor', methods=['PUT'])
+def update_investor_route():
+    return projectops.update_investor()
+
 
 
 
