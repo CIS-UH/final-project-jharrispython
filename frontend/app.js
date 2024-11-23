@@ -19,3 +19,13 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Frontend server running on port ${PORT}`);
 });
+
+app.get('/investors', async (req, res) => {
+    try {
+        const response = await axios.get('http://localhost:5000/investor');
+        const investors = response.data;
+        res.render('investors', { investors });
+    } catch (error) {
+        res.status(500).send('Error fetching investors');
+    }
+});
