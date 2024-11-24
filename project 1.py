@@ -5,6 +5,7 @@ app = Flask(__name__)
 
 @app.route('/investor', methods = ['GET'])
 def investor_list_route():
+    print("GET /investor called")  # Add this line
     return projectops.investor_list()
 
 @app.route('/investor/<int:investor_id>', methods = ['GET'])
